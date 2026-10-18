@@ -232,10 +232,11 @@
                 // Danh sách sản phẩm trong đơn
                 let htmlMonHang = "";
                 donHang.items.forEach(function(mon) {
+                    let duongDanHinh = (mon.hinh && (mon.hinh.startsWith("data:") || mon.hinh.startsWith("http"))) ? mon.hinh : "./image/" + mon.hinh;
                     htmlMonHang += `
                         <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid #f1f5f9;">
                             <div style="display:flex; align-items:center; gap:10px;">
-                                <img src="./image/${mon.hinh}" style="width:50px; height:40px; object-fit:contain; border:1px solid #e2e8f0; border-radius:4px;">
+                                <img src="${duongDanHinh}" style="width:50px; height:40px; object-fit:contain; border:1px solid #e2e8f0; border-radius:4px;">
                                 <div>
                                     <strong style="font-size:13px; color:#0f172a;">${mon.tensp}</strong><br>
                                     <small style="color:#64748b;">Mã: ${mon.masp} | Đơn giá: $${mon.gia}</small>

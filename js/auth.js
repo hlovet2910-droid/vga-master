@@ -154,7 +154,7 @@ function xuLyDangKy(suKien) {
         return;
     }
 
-    // Tạo ID tự tăng gọn gàng
+    // Tạo ID tự tăng
     let maSoCaoNhat = danhSachNguoiDung.reduce(function(lonNhat, muc) {
         let soId = Number(muc.id);
         return (!isNaN(soId) && soId < 10000) ? Math.max(lonNhat, soId) : lonNhat;

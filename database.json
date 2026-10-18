@@ -8,7 +8,8 @@
       "khuyenmai": 0,
       "ctsp": "24GB GDDR6X | 384-bit | Boost: 2640 MHz",
       "hinh": "rtx4090.png",
-      "daban": 18
+      "daban": 18,
+      "tonkho": 5
     },
     {
       "masp": "VGA02",
@@ -18,7 +19,8 @@
       "khuyenmai": 0,
       "ctsp": "16GB GDDR6X | 256-bit | Tri Frozr 3S",
       "hinh": "rtx4080s.png",
-      "daban": 12
+      "daban": 12,
+      "tonkho": 8
     },
     {
       "masp": "VGA03",
@@ -28,7 +30,8 @@
       "khuyenmai": 10,
       "ctsp": "16GB GDDR6X | 256-bit | Torx Fan 5.0",
       "hinh": "rtx4070ti.png",
-      "daban": 25
+      "daban": 25,
+      "tonkho": 12
     },
     {
       "masp": "VGA04",
@@ -38,7 +41,8 @@
       "khuyenmai": 0,
       "ctsp": "12GB GDDR6X | 192-bit | Military Grade",
       "hinh": "rtx4070s.png",
-      "daban": 15
+      "daban": 15,
+      "tonkho": 10
     },
     {
       "masp": "VGA05",
@@ -48,7 +52,8 @@
       "khuyenmai": 0,
       "ctsp": "8GB GDDR6 | 128-bit | White Hologram",
       "hinh": "rtx4060ti.png",
-      "daban": 20
+      "daban": 20,
+      "tonkho": 15
     },
     {
       "masp": "VGA06",
@@ -58,7 +63,8 @@
       "khuyenmai": 10,
       "ctsp": "8GB GDDR6 | 128-bit | Axial-tech Fan",
       "hinh": "rtx4060.png",
-      "daban": 38
+      "daban": 38,
+      "tonkho": 20
     },
     {
       "masp": "VGA07",
@@ -68,7 +74,8 @@
       "khuyenmai": 0,
       "ctsp": "12GB GDDR6 | 192-bit | Dual Fan OC",
       "hinh": "rtx3060.png",
-      "daban": 31
+      "daban": 31,
+      "tonkho": 14
     },
     {
       "masp": "VGA08",
@@ -78,7 +85,8 @@
       "khuyenmai": 0,
       "ctsp": "6GB GDDR6 | 96-bit | Compact Design",
       "hinh": "rtx3050.png",
-      "daban": 8
+      "daban": 8,
+      "tonkho": 6
     },
     {
       "masp": "VGA09",
@@ -88,7 +96,8 @@
       "khuyenmai": 0,
       "ctsp": "24GB GDDR6 | 384-bit | Vapor-X Cooling",
       "hinh": "rx7900xtx.png",
-      "daban": 14
+      "daban": 14,
+      "tonkho": 7
     },
     {
       "masp": "VGA10",
@@ -98,7 +107,8 @@
       "khuyenmai": 0,
       "ctsp": "20GB GDDR6 | 320-bit | Ice Blue LED",
       "hinh": "rx7900xt.png",
-      "daban": 9
+      "daban": 9,
+      "tonkho": 9
     },
     {
       "masp": "VGA11",
@@ -108,7 +118,8 @@
       "khuyenmai": 10,
       "ctsp": "16GB GDDR6 | 256-bit | Windforce 3X",
       "hinh": "rx7800xt.png",
-      "daban": 19
+      "daban": 19,
+      "tonkho": 11
     },
     {
       "masp": "VGA12",
@@ -118,7 +129,8 @@
       "khuyenmai": 0,
       "ctsp": "12GB GDDR6 | 192-bit | Dual Ball Bearing",
       "hinh": "rx7700xt.png",
-      "daban": 11
+      "daban": 11,
+      "tonkho": 8
     },
     {
       "masp": "VGA13",
@@ -128,7 +140,8 @@
       "khuyenmai": 0,
       "ctsp": "16GB GDDR6 | 128-bit | ARGB White Edition",
       "hinh": "rx7600xt.png",
-      "daban": 16
+      "daban": 16,
+      "tonkho": 16
     },
     {
       "masp": "VGA14",
@@ -138,7 +151,8 @@
       "khuyenmai": 10,
       "ctsp": "8GB GDDR6 | 128-bit | Best Budget 1080p",
       "hinh": "rx6600.png",
-      "daban": 42
+      "daban": 42,
+      "tonkho": 25
     },
     {
       "masp": "VGA15",
@@ -148,7 +162,8 @@
       "khuyenmai": 0,
       "ctsp": "16GB GDDR6 | 256-bit | XeSS & AV1 Codec",
       "hinh": "arc770.png",
-      "daban": 4
+      "daban": 4,
+      "tonkho": 4
     }
   ],
   "nguoidung": [

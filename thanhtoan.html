@@ -246,12 +246,13 @@
             danhSachDonHang.unshift(donHangMoi);
             DB.luuDanhSachDonHang(danhSachDonHang);
 
-            // Cập nhật số lượng đã bán cho sản phẩm
+            // Cập nhật số lượng đã bán và trừ tồn kho cho sản phẩm
             let danhSachSanPham = DB.layDanhSachSanPham();
             danhSachGioHang.forEach(function(mon) {
                 let sanPham = danhSachSanPham.find(function(muc) { return muc.masp === mon.masp; });
                 if (sanPham) {
                     sanPham.daban = (sanPham.daban || 0) + Number(mon.soluong);
+                    sanPham.tonkho = Math.max(0, (sanPham.tonkho || 0) - Number(mon.soluong));
                 }
             });
             DB.luuDanhSachSanPham(danhSachSanPham);

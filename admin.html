@@ -125,12 +125,13 @@
                     <table class="card-table">
                         <thead>
                             <tr>
-                                <th width="10%">Hình</th>
+                                <th width="8%">Hình</th>
                                 <th width="10%">Mã</th>
-                                <th width="30%">Tên Card</th>
-                                <th width="15%">Giá Bán</th>
-                                <th width="15%">Đã Bán</th>
-                                <th width="20%">Thao Tác</th>
+                                <th width="28%">Tên Card</th>
+                                <th width="12%">Giá Bán</th>
+                                <th width="12%">Tồn Kho</th>
+                                <th width="12%">Đã Bán</th>
+                                <th width="18%">Thao Tác</th>
                             </tr>
                         </thead>
                         <tbody id="tblProducts"></tbody>
@@ -200,6 +201,64 @@
             </div>
         </div>
     </div>
+
+    <!-- MODAL THÊM CARD ĐỒ HỌA MỚI -->
+    <div id="modalProductAdmin" class="modal-overlay">
+        <div class="modal-card modal-large" style="max-height:90vh; overflow-y:auto;">
+            <button class="modal-close" onclick="dongHopThoaiThemSanPham()">✕</button>
+            <h3 class="modal-title">✨ THÊM CARD ĐỒ HỌA MỚI VÀO KHO</h3>
+            <form id="formThemSanPham" onsubmit="xuLyLuuSanPhamMoi(event)">
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+                    <div class="modal-form-group">
+                        <label class="modal-form-label">Mã sản phẩm:</label>
+                        <input type="text" id="inpMasp" class="modal-form-input" required placeholder="Ví dụ: VGA16">
+                    </div>
+                    <div class="modal-form-group">
+                        <label class="modal-form-label">Đơn giá bán ($):</label>
+                        <input type="number" id="inpGia" min="1" class="modal-form-input" required placeholder="Ví dụ: 850">
+                    </div>
+                </div>
+
+                <div class="modal-form-group">
+                    <label class="modal-form-label">Tên Card đồ họa:</label>
+                    <input type="text" id="inpTensp" class="modal-form-input" required placeholder="Ví dụ: ASUS ROG Matrix RTX 4090 24GB">
+                </div>
+
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+                    <div class="modal-form-group">
+                        <label class="modal-form-label">Số lượng tồn kho:</label>
+                        <input type="number" id="inpTonKho" min="0" value="10" class="modal-form-input" required placeholder="Số lượng trong kho">
+                    </div>
+                    <div class="modal-form-group">
+                        <label class="modal-form-label">Khuyến mãi (%):</label>
+                        <input type="number" id="inpKhuyenMai" min="0" max="100" value="0" class="modal-form-input" placeholder="0 nếu không giảm">
+                    </div>
+                </div>
+
+                <div class="modal-form-group">
+                    <label class="modal-form-label">Thông số kỹ thuật:</label>
+                    <input type="text" id="inpCtsp" class="modal-form-input" required placeholder="Ví dụ: 24GB GDDR6X | 384-bit | Liquid Metal Cooling">
+                </div>
+
+                <div class="modal-form-group" style="background:#f8fafc; border:1px dashed #cbd5e1; padding:14px; border-radius:8px;">
+                    <label class="modal-form-label" style="color:#0f172a; font-size:13px;">🖼️ Chọn ảnh sản phẩm từ máy tính của bạn:</label>
+                    <input type="file" id="inpFileHinh" accept="image/*" onchange="xuLyChonTepAnh(event)" style="font-size:13px; margin:6px 0 8px; display:block;">
+                    <p style="font-size:11px; color:#64748b; margin:0 0 8px;">(Hệ thống tự động chuyển ảnh sang dữ liệu chuẩn để lưu vĩnh viễn trên web)</p>
+
+                    <!-- Khung xem trước ảnh -->
+                    <div id="khungXemTruocAnh" style="display:none; align-items:center; gap:12px; margin-top:8px;">
+                        <img id="imgXemTruoc" src="" style="width:75px; height:55px; object-fit:contain; border:1px solid #cbd5e1; border-radius:6px; background:#fff; padding:2px;">
+                        <span style="font-size:12px; color:#16a34a; font-weight:bold;">✔ Đã nhận ảnh từ máy tính</span>
+                    </div>
+                </div>
+
+                <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:18px;">
+                    <button type="button" class="btn-sm btn-secondary" onclick="dongHopThoaiThemSanPham()">Hủy Bỏ</button>
+                    <button type="submit" class="btn-sm btn-primary" style="padding:8px 22px; font-size:13px; font-weight:bold;">Lưu & Đưa Lên Đầu Danh Sách</button>
+                </div>
+            </form>
+        </div>
+    </div>
         <!-- SCRIPT LOGIC QUẢN TRỊ ADMIN -->
     <script>
 
@@ -236,12 +295,17 @@
             let phanThanBang = document.getElementById("tblProducts");
             let chuoiHtml = "";
             danhSachSanPham.forEach(function(sanPham) {
+                let duongDanHinh = (sanPham.hinh && (sanPham.hinh.startsWith("data:") || sanPham.hinh.startsWith("http"))) ? sanPham.hinh : "./image/" + sanPham.hinh;
+                let tonKhoSp = typeof sanPham.tonkho === "number" ? sanPham.tonkho : 10;
+                let mauTonKho = tonKhoSp > 0 ? "#16a34a" : "#ef4444";
+
                 chuoiHtml += `
                     <tr>
-                        <td><img src="./image/${sanPham.hinh}" style="width:40px; height:30px; object-fit:contain; border:1px solid #e2e8f0; border-radius:4px;"></td>
+                        <td><img src="${duongDanHinh}" style="width:45px; height:35px; object-fit:contain; border:1px solid #e2e8f0; border-radius:4px; background:#fff;"></td>
                         <td><strong>${sanPham.masp}</strong></td>
                         <td>${sanPham.tensp}</td>
                         <td style="color:#e11d48; font-weight:bold;">$${sanPham.gia}</td>
+                        <td><strong style="color:${mauTonKho};">${tonKhoSp}</strong> chiếc</td>
                         <td><strong>${sanPham.daban || 0}</strong> chiếc</td>
                         <td>
                             <button class="btn-sm btn-primary" onclick="suaSanPham('${sanPham.masp}')">Sửa</button>
@@ -253,19 +317,74 @@
             phanThanBang.innerHTML = chuoiHtml;
         }
 
+        let duLieuHinhBase64 = "";
+
         function moHopThoaiThemSanPham() {
-            let masp = prompt("Nhập mã sản phẩm mới (VD: VGA16):");
-            if (!masp) return;
-            let tensp = prompt("Nhập tên Card đồ họa:");
-            if (!tensp) return;
-            let gia = Number(prompt("Nhập đơn giá ($):") || 0);
-            let ctsp = prompt("Nhập thông số kỹ thuật (VRAM, Bus, Tản nhiệt):") || "Chính hãng bảo hành 36 tháng";
-            let hinh = prompt("Tên file ảnh (VD: rtx4090.png hoặc baner3.jpg):") || "rtx4090.png";
+            let danhSachSanPham = DB.layDanhSachSanPham();
+            let maspGoiY = "VGA" + String(danhSachSanPham.length + 1).padStart(2, "0");
+            document.getElementById("formThemSanPham").reset();
+            document.getElementById("inpMasp").value = maspGoiY;
+            document.getElementById("khungXemTruocAnh").style.display = "none";
+            duLieuHinhBase64 = "";
+            document.getElementById("modalProductAdmin").style.display = "flex";
+        }
+
+        function dongHopThoaiThemSanPham() {
+            document.getElementById("modalProductAdmin").style.display = "none";
+        }
+
+        function xuLyChonTepAnh(suKien) {
+            let tapTin = suKien.target.files[0];
+            if (!tapTin) return;
+
+            let docTep = new FileReader();
+            docTep.onload = function(e) {
+                duLieuHinhBase64 = e.target.result;
+                let imgXemTruoc = document.getElementById("imgXemTruoc");
+                let khungXemTruoc = document.getElementById("khungXemTruocAnh");
+                if (imgXemTruoc && khungXemTruoc) {
+                    imgXemTruoc.src = duLieuHinhBase64;
+                    khungXemTruoc.style.display = "flex";
+                }
+            };
+            docTep.readAsDataURL(tapTin);
+        }
+
+        function xuLyLuuSanPhamMoi(suKien) {
+            suKien.preventDefault();
+            let masp = document.getElementById("inpMasp").value.trim().toUpperCase();
+            let tensp = document.getElementById("inpTensp").value.trim();
+            let gia = Number(document.getElementById("inpGia").value) || 0;
+            let tonkho = Number(document.getElementById("inpTonKho").value) || 0;
+            let khuyenmai = Number(document.getElementById("inpKhuyenMai").value) || 0;
+            let ctsp = document.getElementById("inpCtsp").value.trim();
+            let hinh = duLieuHinhBase64 || "rtx4090.png";
 
             let danhSachSanPham = DB.layDanhSachSanPham();
-            danhSachSanPham.push({ masp: masp, tensp: tensp, gia: gia, giagoc: gia, khuyenmai: 0, ctsp: ctsp, hinh: hinh, daban: 0 });
+            let daTonTai = danhSachSanPham.some(function(sp) { return sp.masp === masp; });
+            if (daTonTai) {
+                alert("⚠️ Mã sản phẩm [" + masp + "] đã tồn tại! Vui lòng chọn mã khác.");
+                return;
+            }
+
+            let sanPhamMoi = {
+                masp: masp,
+                tensp: tensp,
+                gia: gia,
+                giagoc: gia,
+                khuyenmai: khuyenmai,
+                ctsp: ctsp,
+                hinh: hinh,
+                tonkho: tonkho,
+                daban: 0
+            };
+
+            // ĐƯA SẢN PHẨM MỚI LÊN ĐẦU DANH SÁCH (unshift)
+            danhSachSanPham.unshift(sanPhamMoi);
             DB.luuDanhSachSanPham(danhSachSanPham);
-            alert("Đã thêm card đồ họa mới thành công!");
+
+            alert("🎉 Đã thêm sản phẩm [" + tensp + "] lên đầu danh sách thành công!");
+            dongHopThoaiThemSanPham();
             hienThiSanPhamAdmin();
         }
 
@@ -281,11 +400,15 @@
                 sanPham.gia = Number(giaMoi);
                 sanPham.giagoc = Number(giaMoi);
             }
+            let tonKhoMoi = prompt("Sửa số lượng tồn kho:", typeof sanPham.tonkho === "number" ? sanPham.tonkho : 10);
+            if (tonKhoMoi !== null && tonKhoMoi !== "") {
+                sanPham.tonkho = Math.max(0, Number(tonKhoMoi));
+            }
             let thongSoMoi = prompt("Sửa thông số kỹ thuật:", sanPham.ctsp);
             if (thongSoMoi) sanPham.ctsp = thongSoMoi;
 
             DB.luuDanhSachSanPham(danhSachSanPham);
-            alert("Đã cập nhật sản phẩm!");
+            alert("Đã cập nhật sản phẩm thành công!");
             hienThiSanPhamAdmin();
         }
 

@@ -12,7 +12,7 @@ let sanpham = {
     khuyenmai: 0,
     giagoc: 0,
 
-    khoiTao: function(masp, tensp, gia, ctsp, hinh, khuyenmai, giagoc) {
+    khoiTao: function(masp, tensp, gia, ctsp, hinh, khuyenmai, giagoc, tonkho) {
         this.masp = masp;
         this.tensp = tensp;
         this.gia = gia;
@@ -20,6 +20,7 @@ let sanpham = {
         this.hinh = hinh;
         this.khuyenmai = khuyenmai || 0;
         this.giagoc = giagoc || gia;
+        this.tonkho = typeof tonkho === "number" ? tonkho : (tonkho ? Number(tonkho) : 10);
     },
 
     xuatSp: function(dsSanPham) {
@@ -37,8 +38,11 @@ let sanpham = {
 
     motSp: function(sp) {
         let chuoiHtml = "";
+        let tonKhoSp = typeof sp.tonkho === "number" ? sp.tonkho : 10;
+        let duongDanHinh = (sp.hinh && (sp.hinh.startsWith("data:") || sp.hinh.startsWith("http"))) ? sp.hinh : "./image/" + sp.hinh;
+
         // 1. Ảnh sản phẩm 
-        chuoiHtml += '<div><img src="./image/' + sp.hinh + '" alt="' + sp.tensp + '" onclick="xemChiTietSanPham(\'' + sp.masp + '\')" class="pointer-cursor" title="Nhấn để xem đánh giá & chi tiết"></div>';
+        chuoiHtml += '<div><img src="' + duongDanHinh + '" alt="' + sp.tensp + '" onclick="xemChiTietSanPham(\'' + sp.masp + '\')" class="pointer-cursor" title="Nhấn để xem đánh giá & chi tiết"></div>';
         // 2. Tên card đồ họa
         chuoiHtml += '<p onclick="xemChiTietSanPham(\'' + sp.masp + '\')" class="pointer-cursor" title="Nhấn để xem đánh giá">' + sp.tensp + '</p>';
         // 3. Giá tiền 
@@ -47,14 +51,27 @@ let sanpham = {
         } else {
             chuoiHtml += '<p>$<span class="giaban">' + sp.gia + '</span></p>';
         }
-        // 4. Ô nhập số lượng
-        chuoiHtml += '<input name="soluong" value="1" min="1" type="number">';
+
+        // 4. Trạng thái tồn kho & Ô nhập số lượng
+        if (tonKhoSp <= 0) {
+            chuoiHtml += '<p style="font-size:12px; color:#ef4444; font-weight:bold; margin:4px 0;">🔴 HẾT HÀNG</p>';
+            chuoiHtml += '<input name="soluong" value="0" min="0" max="0" disabled type="number">';
+        } else {
+            chuoiHtml += '<p style="font-size:12px; color:#16a34a; font-weight:600; margin:4px 0;">Kho còn: <strong>' + tonKhoSp + '</strong> chiếc</p>';
+            chuoiHtml += '<input name="soluong" value="1" min="1" max="' + tonKhoSp + '" type="number">';
+        }
+
         // 5. Mã sản phẩm
         chuoiHtml += '<label>' + sp.masp + '</label><br>';
-        // 6. Cặp nút: [Đánh giá] và [Chọn Hàng]
+
+        // 6. Cặp nút: [Chi tiết] và [Chọn Hàng]
         chuoiHtml += '<div class="product-actions-group">';
         chuoiHtml += '  <button type="button" onclick="xemChiTietSanPham(\'' + sp.masp + '\')" class="btn-card-review">💬 Chi tiết</button>';
-        chuoiHtml += '  <button type="button" onclick="chonHang(this, \'' + sp.masp + '\')" class="btn-card-addcart">Chọn Hàng</button>';
+        if (tonKhoSp <= 0) {
+            chuoiHtml += '  <button type="button" disabled class="btn-card-addcart" style="background:#94a3b8; cursor:not-allowed;">Hết Hàng</button>';
+        } else {
+            chuoiHtml += '  <button type="button" onclick="chonHang(this, \'' + sp.masp + '\')" class="btn-card-addcart">Chọn Hàng</button>';
+        }
         chuoiHtml += '</div>';
         return chuoiHtml;
     }
@@ -66,7 +83,7 @@ function taiDanhSachSanPham() {
     danhSachSanPham = [];
     for (let i = 0; i < dsSanPhamTuDB.length; i++) {
         let spHienTai = dsSanPhamTuDB[i];
-        let doiTuong = new sanpham.khoiTao(spHienTai.masp, spHienTai.tensp, spHienTai.gia, spHienTai.ctsp, spHienTai.hinh, spHienTai.khuyenmai, spHienTai.giagoc);
+        let doiTuong = new sanpham.khoiTao(spHienTai.masp, spHienTai.tensp, spHienTai.gia, spHienTai.ctsp, spHienTai.hinh, spHienTai.khuyenmai, spHienTai.giagoc, spHienTai.tonkho);
         danhSachSanPham.push(doiTuong);
     }
     hienThiSanPham(danhSachSanPham);
@@ -121,12 +138,19 @@ function xemChiTietSanPham(masp) {
         });
     }
 
+    let duongDanHinh = (spChon.hinh && (spChon.hinh.startsWith("data:") || spChon.hinh.startsWith("http"))) ? spChon.hinh : "./image/" + spChon.hinh;
+    let tonKhoSp = typeof spChon.tonkho === "number" ? spChon.tonkho : 10;
+    let theTonKho = tonKhoSp > 0 
+        ? '<span style="color:#16a34a; font-weight:bold;">Còn ' + tonKhoSp + ' chiếc trong kho</span>' 
+        : '<span style="color:#ef4444; font-weight:bold;">Tạm hết hàng</span>';
+
     noiDung.innerHTML = `
         <div class="product-detail-header">
-            <img src="./image/${spChon.hinh}" class="product-detail-thumb">
+            <img src="${duongDanHinh}" class="product-detail-thumb">
             <div>
                 <h3 class="product-detail-title">${spChon.tensp}</h3>
                 <p class="product-detail-price">$${spChon.gia}</p>
+                <p class="product-detail-specs" style="margin-bottom:6px;">Tình trạng: ${theTonKho}</p>
                 <p class="product-detail-specs">Thông số kỹ thuật: ${spChon.ctsp}</p>
             </div>
         </div>

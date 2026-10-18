@@ -91,8 +91,25 @@ function chonHang(phanTuNut, maSP) {
     let soLuong = oNhapSl ? Number(oNhapSl.value) : 1;
     if (isNaN(soLuong) || soLuong <= 0) soLuong = 1;
 
-    // Lấy thông tin từ DB để giá và hình chính xác
+    // Lấy thông tin từ DB để giá, hình và tồn kho chính xác
     let sanPhamTimThay = DB.layDanhSachSanPham().find(function(sanPham) { return sanPham.masp === masp; });
+    let tonKhoHienTai = sanPhamTimThay && typeof sanPhamTimThay.tonkho === "number" ? sanPhamTimThay.tonkho : 10;
+
+    let viTri = kiemTraGioHang(masp, danhSachGioHang);
+    let soLuongDaCo = viTri !== -1 ? Number(danhSachGioHang[viTri].soluong) : 0;
+    let tongSl = soLuongDaCo + soLuong;
+
+    // Chặn nếu sản phẩm hết hàng
+    if (tonKhoHienTai <= 0) {
+        alert("⚠️ Sản phẩm này hiện đã TẠM HẾT HÀNG trong kho!");
+        return;
+    }
+
+    // Chặn nếu tổng số lượng đặt vượt quá số lượng trong kho
+    if (tongSl > tonKhoHienTai) {
+        alert("⚠️ KHO KHÔNG ĐỦ SỐ LƯỢNG!\n\nKho chỉ còn lại: " + tonKhoHienTai + " chiếc.\nTrong giỏ bạn đã có: " + soLuongDaCo + " chiếc.\nKhông thể thêm quá số lượng trong kho.");
+        return;
+    }
     
     let ten = sanPhamTimThay ? sanPhamTimThay.tensp : (theSanPham.querySelector('p') ? theSanPham.querySelector('p').innerText : "Card Đồ Họa");
     let gia = sanPhamTimThay ? sanPhamTimThay.gia : 0;
@@ -100,14 +117,17 @@ function chonHang(phanTuNut, maSP) {
         let theGia = theSanPham.querySelector('span.giaban') || theSanPham.querySelector('p span');
         if (theGia) gia = Number(theGia.innerText.replace('$', '').trim()) || 0;
     }
-    let hinh = sanPhamTimThay ? "./image/" + sanPhamTimThay.hinh : (theSanPham.querySelector('img') ? theSanPham.querySelector('img').src : "");
+    let hinh = "";
+    if (sanPhamTimThay && sanPhamTimThay.hinh) {
+        hinh = (sanPhamTimThay.hinh.startsWith("data:") || sanPhamTimThay.hinh.startsWith("http")) ? sanPhamTimThay.hinh : "./image/" + sanPhamTimThay.hinh;
+    } else if (theSanPham.querySelector('img')) {
+        hinh = theSanPham.querySelector('img').src;
+    }
 
-    let viTri = kiemTraGioHang(masp, danhSachGioHang);
     if (viTri == -1) {
         let monMoi = new giohang.khoiTao(masp, hinh, ten, gia, soLuong);
         danhSachGioHang.push(monMoi);
     } else {
-        let tongSl = Number(danhSachGioHang[viTri].soluong) + Number(soLuong);
         danhSachGioHang[viTri].soluong = tongSl;
     }
 
