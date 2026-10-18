@@ -1,0 +1,355 @@
+================================================================================
+   BẢN ĐỒ TOÀN BỘ TÍNH NĂNG & HÀM HỆ THỐNG - WEBSITE VGA MASTER 2026
+   (TÀI LIỆU HỖ TRỢ THUYẾT TRÌNH & BÁO CÁO ĐỒ ÁN / BÀI TẬP JAVASCRIPT)
+   [HỆ THỐNG FULL-STACK CLIENT - SERVER RESTFUL API & CƠ SỞ DỮ LIỆU TẬP TRUNG]
+================================================================================
+
+DỰ ÁN: WEBSITE BÁN CARD ĐỒ HỌA MÁY TÍNH CHÍNH HÃNG (VGA MASTER)
+CÔNG NGHỆ: HTML5, CSS3, JavaScript (Frontend) + Node.js, Express (Backend Server)
+CƠ SỞ DỮ LIỆU: database.json (Lưu trữ tập trung trên máy chủ Server)
+MÔ HÌNH: Full-stack Web Động (Client - Server RESTful API)
+
+================================================================================
+PHẦN 1: TỔNG QUAN KIẾN TRÚC & NGUYÊN LÝ HOẠT ĐỘNG
+================================================================================
+Website VGA Master hoạt động theo mô hình Full-stack Web Động (Client - Server):
+1. Phía Máy khách (Client-side Frontend):
+   - Xây dựng bằng HTML5, CSS3 và JavaScript thuần (Vanilla JS).
+   - Đảm nhiệm giao diện hiển thị, giỏ hàng, tìm kiếm và gửi yêu cầu (Request).
+2. Phía Máy chủ (Server-side Backend):
+   - Xây dựng trên nền tảng Node.js và framework Express (tệp server.js).
+   - Đảm nhiệm phục vụ tệp tin tĩnh và cung cấp 5 cụm RESTful API dữ liệu.
+3. Cơ sở dữ liệu tập trung (Database Persistence):
+   - Lưu trữ toàn bộ dữ liệu tại tệp database.json trên máy chủ.
+   - Dữ liệu được ghi nhận vĩnh viễn, không bị mất khi đóng trình duyệt hay đổi máy.
+
+================================================================================
+PHẦN 2: CẤU TRÚC TỆP TIN DỰ ÁN (FILE STRUCTURE)
+================================================================================
+CuaHang_CardDoHoa/
+│
+├── server.js           : Máy chủ Node.js & Express, cung cấp RESTful API và lưu dữ liệu tập trung
+├── database.json       : Cơ sở dữ liệu tập trung lưu trên máy chủ (15 VGA, tài khoản, đơn hàng)
+├── package.json        : Cấu hình dự án Node.js và các thư viện (express, cors)
+│
+├── index.html          : Trang chủ (Topbar, Banner, 15 VGA, Giỏ hàng, Đánh giá sao)
+├── thanhtoan.html      : Trang thanh toán (Bảo mật Auth Guard, Bảng tiền hàng, Đặt hàng)
+├── donhang.html        : Lịch sử mua hàng & Quá trình vận chuyển 5 bước, Hủy đơn hàng
+├── admin.html          : Bảng điều khiển quản trị 4 module (Sản phẩm, Đơn hàng, Khách hàng, Đánh giá)
+│
+├── css/
+│   └── style.css       : Toàn bộ định dạng giao diện, màu sắc, giá, popup modal, giỏ hàng cố định
+│
+├── js/
+│   ├── storage.js      : Đồng bộ dữ liệu 2 chiều với server.js qua REST API & bộ đệm Client
+│   ├── auth.js         : Đăng ký, Đăng nhập, Phân quyền Admin
+│   ├── banner.js       : Quản lý banner gaming cố định (baner3.jpg)
+│   ├── sanpham.js      : Đổ 15 card VGA, Tìm kiếm real-time, Xem chi tiết sản phẩm
+│   └── giohang.js      : Quản lý giỏ hàng, Nút Chọn Hàng, Xóa món, Nút Thanh Toán
+│
+├── image/              : Chứa 15 ảnh card đồ họa (.png), baner3.jpg, icon-gio-hang.png
+└── All_Module.txt      : Bảng tra cứu danh sách toàn bộ 54 hàm hiện có và vị trí code
+
+================================================================================
+PHẦN 3: BẢNG LIỆT KÊ TOÀN BỘ 54 HÀM HIỆN CÓ TRONG HỆ THỐNG (THUẦN TIẾNG VIỆT)
+================================================================================
+
+--------------------------------------------------------------------------------
+A. KHO DỮ LIỆU LOCALSTORAGE TẬP TRUNG (js/storage.js) - 11 HÀM
+* CÁC HẰNG SỐ DỮ LIỆU (THUẦN VIỆT 100%):
+  - DANH_SACH_SAN_PHAM   : 15 card đồ họa VGA
+  - DANH_SACH_NGUOI_DUNG : Tài khoản admin (123) và 4 khách hàng mẫu
+  - DANH_SACH_DON_HANG   : 3 đơn đặt hàng mẫu với trạng thái khác nhau
+  - DANH_SACH_DANH_GIA   : 3 đánh giá sao bình luận mẫu
+--------------------------------------------------------------------------------
+1. khoiTaoDuLieu()
+   - Nơi khai báo: js/storage.js
+   - Chức năng: Khởi tạo dữ liệu mẫu (15 sản phẩm, tài khoản admin, đơn hàng, đánh giá).
+
+2. DB.layDanhSachSanPham()
+   - Nơi khai báo: js/storage.js
+   - Chức năng: Đọc danh sách 15 card đồ họa từ localStorage (vga_products).
+
+3. DB.luuDanhSachSanPham(danhSach)
+   - Nơi khai báo: js/storage.js
+   - Chức năng: Ghi đè danh sách sản phẩm mới vào localStorage (vga_products).
+
+4. DB.layDanhSachNguoiDung()
+   - Nơi khai báo: js/storage.js
+   - Chức năng: Đọc danh sách tài khoản từ localStorage (vga_users).
+
+5. DB.luuDanhSachNguoiDung(danhSach)
+   - Nơi khai báo: js/storage.js
+   - Chức năng: Lưu danh sách tài khoản vào localStorage (vga_users).
+
+6. DB.layNguoiDungHienTai()
+   - Nơi khai báo: js/storage.js
+   - Chức năng: Lấy thông tin tài khoản đang đăng nhập hiện tại từ localStorage (vga_current_user).
+
+7. DB.luuNguoiDungHienTai(nguoiDung)
+   - Nơi khai báo: js/storage.js
+   - Chức năng: Ghi nhớ phiên tài khoản đang đăng nhập hiện tại (truyền null khi đăng xuất).
+
+8. DB.layDanhSachDonHang()
+   - Nơi khai báo: js/storage.js
+   - Chức năng: Đọc danh sách các đơn đặt hàng từ localStorage (vga_orders).
+
+9. DB.luuDanhSachDonHang(danhSach)
+   - Nơi khai báo: js/storage.js
+   - Chức năng: Lưu danh sách đơn đặt hàng vào localStorage (vga_orders).
+
+10. DB.layDanhSachDanhGia()
+    - Nơi khai báo: js/storage.js
+    - Chức năng: Đọc danh sách bình luận đánh giá sao từ localStorage (vga_reviews).
+
+11. DB.luuDanhSachDanhGia(danhSach)
+    - Nơi khai báo: js/storage.js
+    - Chức năng: Lưu danh sách bình luận đánh giá vào localStorage (vga_reviews).
+
+--------------------------------------------------------------------------------
+B. PHÂN HỆ TÀI KHOẢN & PHÂN QUYỀN (js/auth.js) - 6 HÀM
+--------------------------------------------------------------------------------
+12. capNhatGiaoDienNguoiDung()
+    - Nơi khai báo: js/auth.js
+    - Chức năng: Cập nhật Topbar (Chào [Tên], nút Admin nếu là admin, nút Đơn hàng, Đăng xuất).
+
+13. moHopThoaiTaiKhoan(loaiHopThoai)
+    - Nơi khai báo: js/auth.js
+    - Chức năng: Mở hộp thoại popup đăng nhập ('login') hoặc đăng ký ('register').
+
+14. dongHopThoaiTaiKhoan()
+    - Nơi khai báo: js/auth.js
+    - Chức năng: Đóng popup đăng nhập / đăng ký.
+
+15. xuLyDangNhap(suKien)
+    - Nơi khai báo: js/auth.js
+    - Chức năng: Kiểm tra đăng nhập, lưu phiên làm việc và điều hướng sang admin nếu là admin.
+
+16. xuLyDangKy(suKien)
+    - Nơi khai báo: js/auth.js
+    - Chức năng: Kiểm tra dữ liệu, tự tạo ID mới, lưu tài khoản và tự động đăng nhập.
+
+17. dangXuat()
+    - Nơi khai báo: js/auth.js
+    - Chức năng: Xóa phiên tài khoản (lưu null) và đưa web về trạng thái khách vãng lai.
+
+--------------------------------------------------------------------------------
+C. PHÂN HỆ HIỂN THỊ SẢN PHẨM & TÌM KIẾM (js/sanpham.js) - 8 HÀM
+--------------------------------------------------------------------------------
+18. sanpham.khoiTao(masp, tensp, gia, ctsp, hinh, khuyenmai, giagoc)
+    - Nơi khai báo: js/sanpham.js
+    - Chức năng: Khởi tạo đối tượng 1 chiếc card đồ họa.
+
+19. sanpham.motSp(sp)
+    - Nơi khai báo: js/sanpham.js
+    - Chức năng: Tạo khối HTML cho 1 thẻ sản phẩm.
+
+20. sanpham.xuatSp(dsSanPham)
+    - Nơi khai báo: js/sanpham.js
+    - Chức năng: Xuất danh sách các thẻ card VGA ra màn hình trang chủ.
+
+21. taiDanhSachSanPham()
+    - Nơi khai báo: js/sanpham.js
+    - Chức năng: Tải 15 card VGA từ kho localStorage và đổ ra giao diện.
+
+22. hienThiSanPham(danhSach)
+    - Nơi khai báo: js/sanpham.js
+    - Chức năng: Đổ mảng sản phẩm ra vùng chứa #showsanpham.
+
+23. timKiemSanPham()
+    - Nơi khai báo: js/sanpham.js
+    - Chức năng: Lọc sản phẩm theo thời gian thực (Real-time Search) khi gõ tên hoặc mã card.
+
+24. xemChiTietSanPham(masp)
+    - Nơi khai báo: js/sanpham.js
+    - Chức năng: Xem ảnh lớn, đơn giá, thông số kỹ thuật (VRAM, Bus, Tản nhiệt) và đánh giá khách hàng.
+
+25. dongHopThoaiChiTiet()
+    - Nơi khai báo: js/sanpham.js
+    - Chức năng: Đóng popup xem chi tiết sản phẩm.
+
+--------------------------------------------------------------------------------
+D. PHÂN HỆ GIỎ HÀNG & MUA HÀNG (js/giohang.js) - 9 HÀM
+--------------------------------------------------------------------------------
+26. giohang.khoiTao(masp, hinh, ten, gia, soluong)
+    - Nơi khai báo: js/giohang.js
+    - Chức năng: Khởi tạo món hàng trong giỏ.
+
+27. giohang.motSpGioHang(monHang)
+    - Nơi khai báo: js/giohang.js
+    - Chức năng: Định dạng 1 dòng HTML bảng giỏ hàng.
+
+28. giohang.xuatGioHang(dsGioHang)
+    - Nơi khai báo: js/giohang.js
+    - Chức năng: Xuất toàn bộ bảng giỏ hàng kèm nút Thanh Toán Đơn Hàng.
+
+29. hienThiGioHang()
+    - Nơi khai báo: js/giohang.js
+    - Chức năng: Bật / Tắt bảng giỏ hàng nổi cố định trên màn hình.
+
+30. hienThiSpGioHang()
+    - Nơi khai báo: js/giohang.js
+    - Chức năng: Kết xuất lại danh sách các món hàng ra bảng giỏ hàng.
+
+31. kiemTraGioHang(maSanPham, dsGioHang)
+    - Nơi khai báo: js/giohang.js
+    - Chức năng: Kiểm tra sản phẩm đã có trong giỏ chưa để cộng dồn số lượng.
+
+32. chonHang(phanTuNut, maSP)
+    - Nơi khai báo: js/giohang.js
+    - Chức năng: Thêm sản phẩm vào giỏ và LUÔN LUÔN TỰ ĐỘNG BẬT GIỎ HÀNG HIỆN LÊN.
+
+33. xoaGioHang(phanTuNut)
+    - Nơi khai báo: js/giohang.js
+    - Chức năng: Xóa một món sản phẩm được chọn khỏi giỏ hàng.
+
+34. chuyenSangThanhToan()
+    - Nơi khai báo: js/giohang.js
+    - Chức năng: Bắt buộc người dùng phải đăng nhập trước khi chuyển sang thanh toán.
+
+--------------------------------------------------------------------------------
+E. QUẢN LÝ BANNER QUẢNG CÁO (js/banner.js) - 1 HÀM
+--------------------------------------------------------------------------------
+35. doiHinhBanner()
+    - Nơi khai báo: js/banner.js
+    - Chức năng: Cố định hiển thị hình ảnh banner chính (baner3.jpg).
+
+--------------------------------------------------------------------------------
+F. TRANG THANH TOÁN & ĐẶT HÀNG (thanhtoan.html) - 4 HÀM
+--------------------------------------------------------------------------------
+36. kiemTraDangNhap()
+    - Nơi khai báo: thanhtoan.html
+    - Chức năng: Auth Guard - Kiểm tra đăng nhập, chặn khách vãng lai gõ trực tiếp URL.
+
+37. hienThiDonHang()
+    - Nơi khai báo: thanhtoan.html
+    - Chức năng: Đọc giỏ hàng và hiển thị bảng sản phẩm cần thanh toán, tự điền họ tên.
+
+38. tinhTongTien()
+    - Nơi khai báo: thanhtoan.html
+    - Chức năng: Tính toán tổng tiền thanh toán tiền hàng.
+
+39. xuLyDatHang(suKien)
+    - Nơi khai báo: thanhtoan.html
+    - Chức năng: Lưu đơn hàng (#DHxxxx), cập nhật số lượng đã bán và chuyển sang donhang.html.
+
+--------------------------------------------------------------------------------
+G. TRANG LỊCH SỬ ĐƠN HÀNG (donhang.html) - 2 HÀM
+* HẰNG SỐ TIẾN TRÌNH VẬN CHUYỂN:
+  - CAC_BUOC_VAN_CHUYEN : 5 bước giao hàng (Chờ xác nhận -> Đã xác nhận -> Đang giao -> Đã giao -> Hoàn tất)
+--------------------------------------------------------------------------------
+40. hienThiDanhSachDonHang()
+    - Nơi khai báo: donhang.html
+    - Chức năng: Hiển thị danh sách các đơn hàng kèm thanh tiến trình 5 bước vận chuyển.
+
+41. huyDonHang(maDonHang)
+    - Nơi khai báo: donhang.html
+    - Chức năng: Hủy đơn hàng khi còn ở trạng thái 'chờ xác nhận'.
+
+--------------------------------------------------------------------------------
+H. TRANG QUẢN TRỊ ADMIN (admin.html) - 13 HÀM
+--------------------------------------------------------------------------------
+42. kiemTraQuyenAdmin()
+    - Nơi khai báo: admin.html
+    - Chức năng: Chỉ cho phép tài khoản Admin truy cập, chặn người dùng thường.
+
+43. chuyenTab(maTab)
+    - Nơi khai báo: admin.html
+    - Chức năng: Chuyển đổi tab hiển thị giữa 4 phân hệ quản trị.
+
+44. hienThiSanPhamAdmin()
+    - Nơi khai báo: admin.html
+    - Chức năng: Hiển thị danh sách card đồ họa ra bảng quản lý sản phẩm.
+
+45. moHopThoaiThemSanPham()
+    - Nơi khai báo: admin.html
+    - Chức năng: Mở hộp thoại thêm card VGA mới vào kho.
+
+46. suaSanPham(masp)
+    - Nơi khai báo: admin.html
+    - Chức năng: Chỉnh sửa tên, đơn giá và thông số kỹ thuật VGA.
+
+47. xoaSanPham(masp)
+    - Nơi khai báo: admin.html
+    - Chức năng: Xóa card đồ họa khỏi kho hàng.
+
+48. hienThiDonHangAdmin()
+    - Nơi khai báo: admin.html
+    - Chức năng: Xem toàn bộ đơn hàng của khách hàng trên hệ thống.
+
+49. doiTrangThaiDon(maDonHang, trangThaiMoi)
+    - Nơi khai báo: admin.html
+    - Chức năng: Đổi trạng thái tiến trình giao hàng (5 bước).
+
+50. hienThiKhachHangAdmin()
+    - Nơi khai báo: admin.html
+    - Chức năng: Hiển thị danh sách khách hàng, tên, username, email và trạng thái.
+
+51. khoaNguoiDung(maNguoiDung, trangThaiMoi)
+    - Nơi khai báo: admin.html
+    - Chức năng: Khóa hoặc Mở khóa tài khoản khách hàng.
+
+52. xoaKhachHang(maNguoiDung)
+    - Nơi khai báo: admin.html
+    - Chức năng: Xóa vĩnh viễn tài khoản khách hàng khỏi hệ thống.
+
+53. hienThiDanhGiaAdmin()
+    - Nơi khai báo: admin.html
+    - Chức năng: Xem toàn bộ đánh giá sao ⭐ và bình luận từ khách hàng.
+
+54. xoaDanhGia(maDanhGia)
+    - Nơi khai báo: admin.html
+    - Chức năng: Xóa đánh giá bình luận vi phạm.
+
+================================================================================
+PHẦN 4: TÀI KHOẢN KIỂM THỬ MẪU (TEST ACCOUNTS)
+================================================================================
+1. QUẢN TRỊ VIÊN DUY NHẤT (ADMIN):
+   - Tên đăng nhập : admin
+   - Mật khẩu      : 123
+   - Quyền hạn     : Quản trị toàn bộ 4 phân hệ tại trang admin.html
+
+2. KHÁCH HÀNG MẪU:
+   - Tên đăng nhập : hoangnam
+   - Mật khẩu      : 123
+   - Vai trò       : Khách hàng mua sắm bình thường
+
+3. KHÁCH HÀNG MỚI ĐĂNG KÝ:
+   - Tên đăng nhập : khachmoi
+   - Mật khẩu      : 123
+   - Vai trò       : Khách hàng mới
+
+================================================================================
+PHẦN 5: DANH SÁCH RESTFUL API & CƠ CHẾ WEB ĐỘNG (server.js)
+================================================================================
+Máy chủ Backend xây dựng trên Node.js + Express, cung cấp 5 cặp REST API chính thức:
+
+1. GET & POST /api/du-lieu
+   - Phương thức GET : Trả về toàn bộ dữ liệu hệ thống (sản phẩm, tài khoản, đơn hàng, đánh giá).
+   - Phương thức POST: Lưu toàn bộ cấu trúc dữ liệu vào tệp tin database.json trên máy chủ.
+
+2. GET & POST /api/sanpham
+   - Phương thức GET : Lấy danh sách 15 sản phẩm card đồ họa từ database.json.
+   - Phương thức POST: Cập nhật, thêm mới, sửa giá, hoặc xóa sản phẩm vĩnh viễn trên server.
+
+3. GET & POST /api/donhang
+   - Phương thức GET : Lấy toàn bộ đơn hàng khách đã đặt trên hệ thống.
+   - Phương thức POST: Lưu đơn hàng mới khi khách thanh toán hoặc cập nhật tiến trình 5 bước giao hàng.
+
+4. GET & POST /api/nguoidung
+   - Phương thức GET : Lấy danh sách tài khoản khách hàng và quản trị viên.
+   - Phương thức POST: Lưu tài khoản mới khi đăng ký hoặc cập nhật trạng thái khóa/mở khóa tài khoản.
+
+5. GET & POST /api/danhgia
+   - Phương thức GET : Lấy danh sách đánh giá sao và bình luận sản phẩm.
+   - Phương thức POST: Lưu đánh giá mới hoặc xóa đánh giá vi phạm từ trang quản trị Admin.
+
+CƠ CHẾ ĐỒNG BỘ CLIENT - SERVER (storage.js):
+- Khi trang web tải lên: Gọi API 'GET /api/du-lieu' để tải dữ liệu mới nhất từ server về trình duyệt.
+- Khi có thao tác thay đổi (thêm sản phẩm, đặt hàng, khóa tài khoản...): Trình duyệt tự động gửi 'POST /api/...' tương ứng lên server để ghi ngay lập tức vào database.json.
+- Kết quả: Dù đóng trình duyệt, mở máy tính khác, hoặc khởi động lại server thì dữ liệu vẫn còn nguyên 100%!
+
+================================================================================
+KẾT THÚC BẢNG LIỆT KÊ - HỆ THỐNG FULL-STACK WEB ĐỘNG TINH GỌN, CHUẨN MỰC, DỄ THUYẾT TRÌNH!
+================================================================================
+

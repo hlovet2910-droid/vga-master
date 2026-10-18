@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xác Nhận Đơn Hàng & Thanh Toán - VGA Master</title>
+    <link rel="stylesheet" href="./css/style.css">
+    <script src="./js/storage.js"></script>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Header trang thanh toán -->
+        <div class="thanhtoan-header">
+            <div>
+                <h1>💳 XÁC NHẬN ĐƠN HÀNG & THANH TOÁN</h1>
+                <p style="color:#94a3b8; font-size:13px; margin-top:4px;">Giao hàng hỏa tốc & Bảo hành chính hãng 36 tháng</p>
+            </div>
+            <a href="index.html" class="btn-quaylai">⬅ Tiếp tục mua hàng</a>
+        </div>
+
+        <!-- Khung 2 cột: Thông tin giao hàng và Bảng sản phẩm -->
+        <div class="thanhtoan-body">
+            <!-- Cột 1: Thông tin khách hàng -->
+            <div class="thanhtoan-box">
+                <h3>📝 THÔNG TIN NGƯỜI NHẬN HÀNG</h3>
+                <form id="formThanhToan" onsubmit="xuLyDatHang(event)">
+                    <div class="form-nhap">
+                        <label for="hoten">Họ và tên khách hàng (*):</label>
+                        <input type="text" id="hoten" required placeholder="Ví dụ: Nguyễn Văn A">
+                    </div>
+                    <div class="form-nhap">
+                        <label for="sdt">Số điện thoại (*):</label>
+                        <input type="tel" id="sdt" required placeholder="Ví dụ: 0912 345 678" pattern="[0-9]{10,11}">
+                    </div>
+                    <div class="form-nhap">
+                        <label for="diachi">Địa chỉ nhận hàng (*):</label>
+                        <input type="text" id="diachi" required placeholder="Số nhà, đường, phường/xã, quận/huyện...">
+                    </div>
+                    <div class="form-nhap">
+                        <label for="phuongthuc">Phương thức thanh toán:</label>
+                        <select id="phuongthuc">
+                            <option value="COD">Thanh toán tiền mặt khi nhận hàng (COD)</option>
+                            <option value="Chuyển khoản">Chuyển khoản ngân hàng (VietQR)</option>
+                            <option value="Trả góp">Trả góp 0% qua thẻ tín dụng</option>
+                        </select>
+                    </div>
+                    <div class="form-nhap">
+                        <label for="ghichu">Ghi chú giao hàng:</label>
+                        <textarea id="ghichu" rows="2" placeholder="Ví dụ: Giao giờ hành chính, gọi trước khi đến..."></textarea>
+                    </div>
+
+                    <button type="submit" class="btn-dathang">XÁC NHẬN ĐẶT HÀNG</button>
+                </form>
+            </div>
+
+            <!-- Cột 2: Danh sách món hàng đã chọn -->
+            <div class="thanhtoan-box">
+                <h3>🛒 SẢN PHẨM TRONG ĐƠN HÀNG</h3>
+                <table class="bang-hoadon">
+                    <thead>
+                        <tr>
+                            <th width="50%">Sản phẩm</th>
+                            <th width="15%" style="text-align:center;">Số lượng</th>
+                            <th width="15%">Đơn giá</th>
+                            <th width="20%" style="text-align:right;">Thành tiền</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dsSanPhamThanhToan">
+                        <!-- Đổ tự động từ sessionStorage -->
+                    </tbody>
+                </table>
+
+                <!-- Tóm tắt chi phí -->
+                <div style="margin-top:15px; border-top:1px solid #e2e8f0; padding-top:10px; font-size:13px;">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                        <span>Tạm tính tiền hàng:</span>
+                        <span id="tamTinhTien">$0</span>
+                    </div>
+                </div>
+
+                <div class="tongcong-box">
+                    <span>Tổng tiền thanh toán:</span>
+                    <span id="tongTienDonHang">$0</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- CHÂN TRANG WEBSITE (FOOTER CHUẨN THƯƠNG MẠI ĐIỆN TỬ) -->
+        <footer class="site-footer">
+            <!-- 4 Cột thông tin chính -->
+            <div class="footer-grid">
+                <!-- Cột 1: Tổng đài & Kết nối -->
+                <div class="footer-col">
+                    <h4>📞 TỔNG ĐÀI HỖ TRỢ MIỄN PHÍ</h4>
+                    <ul class="footer-list">
+                        <li>Tư vấn mua hàng: <strong>1800.6868</strong> (Nhánh 1)</li>
+                        <li>Hỗ trợ kỹ thuật: <strong>1800.6868</strong> (Nhánh 2)</li>
+                        <li>Góp ý, khiếu nại: <strong>1800.8888</strong> (8h00 - 21h30)</li>
+                    </ul>
+                </div>
+
+                <!-- Cột 2: Thông tin & Quy định -->
+                <div class="footer-col">
+                    <h4>📋 QUY CHẾ & CHÍNH SÁCH</h4>
+                    <ul class="footer-links">
+                        <li><a href="javascript:void(0)">Quy chế hoạt động sàn TMĐT</a></li>
+                        <li><a href="javascript:void(0)">Chính sách bảo hành 36 tháng</a></li>
+                        <li><a href="javascript:void(0)">Chính sách đổi trả 1 - 1 trong 30 ngày</a></li>
+                        <li><a href="javascript:void(0)">Chính sách giao hàng hỏa tốc 2H</a></li>
+                        <li><a href="javascript:void(0)">Chính sách kiểm hàng khi nhận (COD)</a></li>
+                        <li><a href="javascript:void(0)">Chính sách bảo mật thông tin cá nhân</a></li>
+                        <li><a href="javascript:void(0)">Bảng giá vệ sinh & tra keo tản nhiệt</a></li>
+                    </ul>
+                </div>
+
+                <!-- Cột 3: Hướng dẫn & Dịch vụ -->
+                <div class="footer-col">
+                    <h4>🛒 HỖ TRỢ KHÁCH HÀNG</h4>
+                    <ul class="footer-links">
+                        <li><a href="javascript:void(0)">Hướng dẫn mua hàng & đặt hàng online</a></li>
+                        <li><a href="javascript:void(0)">Hướng dẫn thanh toán VietQR & Thẻ</a></li>
+                        <li><a href="javascript:void(0)">Hướng dẫn mua trả góp 0% qua thẻ</a></li>
+                        <li><a href="donhang.html">Tra cứu tiến trình vận chuyển đơn hàng</a></li>
+                        <li><a href="javascript:void(0)">Tra cứu hóa đơn điện tử (e-Invoice)</a></li>
+                        <li><a href="javascript:void(0)">Tra cứu bảo hành theo Serial card VGA</a></li>
+                        <li><a href="javascript:void(0)">Câu hỏi thường gặp khi mua linh kiện</a></li>
+                    </ul>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+
+        // Kiểm tra quyền đăng nhập trước khi thanh toán
+        (function kiemTraDangNhap() {
+            let nguoiDung = DB.layNguoiDungHienTai();
+            if (!nguoiDung) {
+                alert("🔒 BẠN CẦN ĐĂNG NHẬP TÀI KHOẢN ĐỂ TIẾP TỤC THANH TOÁN!\n\nHệ thống sẽ chuyển bạn về trang chủ để đăng nhập tài khoản.");
+                window.location.href = "index.html";
+            }
+        })();
+
+        var tongTienTamTinh = 0;
+
+        // Hiển thị danh sách sản phẩm trong giỏ cần thanh toán
+        function hienThiDonHang() {
+            var duLieuGioHang = sessionStorage.getItem("giohang");
+            var danhSachGioHang = [];
+            if (duLieuGioHang) {
+                try { danhSachGioHang = JSON.parse(duLieuGioHang); } catch(loi) { danhSachGioHang = []; }
+            }
+
+            var phanThanBang = document.getElementById("dsSanPhamThanhToan");
+            var phanTuTamTinh = document.getElementById("tamTinhTien");
+            var phanTuTongTien = document.getElementById("tongTienDonHang");
+
+            if (!danhSachGioHang || danhSachGioHang.length === 0) {
+                phanThanBang.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:25px; color:#64748b;">Giỏ hàng của bạn đang trống.<br><a href="index.html" style="color:#2563eb; font-weight:bold; margin-top:8px; display:inline-block;">Quay lại chọn sản phẩm</a></td></tr>';
+                phanTuTamTinh.innerText = "$0";
+                phanTuTongTien.innerText = "$0";
+                return;
+            }
+
+            var chuoiHtml = "";
+            tongTienTamTinh = 0;
+
+            for (var i = 0; i < danhSachGioHang.length; i++) {
+                var monHang = danhSachGioHang[i];
+                var thanhTien = Number(monHang.gia) * Number(monHang.soluong);
+                tongTienTamTinh += thanhTien;
+
+                chuoiHtml += '<tr>';
+                chuoiHtml += '  <td>';
+                chuoiHtml += '    <img src="' + monHang.hinh + '" alt="' + monHang.tensp + '">';
+                chuoiHtml += '    <div style="display:inline-block; vertical-align:middle; max-width:180px;">';
+                chuoiHtml += '      <strong style="font-size:12px; color:#0f172a;">' + monHang.tensp + '</strong><br>';
+                chuoiHtml += '      <small style="color:#2563eb; font-weight:bold;">[' + monHang.masp + ']</small>';
+                chuoiHtml += '    </div>';
+                chuoiHtml += '  </td>';
+                chuoiHtml += '  <td style="text-align:center; font-weight:bold;">' + monHang.soluong + '</td>';
+                chuoiHtml += '  <td>$' + monHang.gia + '</td>';
+                chuoiHtml += '  <td style="text-align:right; font-weight:bold; color:#0f172a;">$' + thanhTien + '</td>';
+                chuoiHtml += '</tr>';
+            }
+
+            phanThanBang.innerHTML = chuoiHtml;
+            tinhTongTien();
+
+            // Tự điền thông tin nếu khách đã đăng nhập
+            let nguoiDungHienTai = DB.layNguoiDungHienTai();
+            if (nguoiDungHienTai) {
+                if (nguoiDungHienTai.fullname) document.getElementById("hoten").value = nguoiDungHienTai.fullname;
+            }
+        }
+
+        // Tính toán tổng tiền thanh toán
+        function tinhTongTien() {
+            document.getElementById("tamTinhTien").innerText = "$" + tongTienTamTinh;
+            document.getElementById("tongTienDonHang").innerText = "$" + tongTienTamTinh;
+        }
+
+        // Xử lý lưu đơn đặt hàng
+        function xuLyDatHang(suKien) {
+            suKien.preventDefault();
+            var duLieuGioHang = sessionStorage.getItem("giohang");
+            var danhSachGioHang = duLieuGioHang ? JSON.parse(duLieuGioHang) : [];
+
+            if (!danhSachGioHang || danhSachGioHang.length === 0) {
+                alert("Giỏ hàng của bạn đang trống! Vui lòng chọn sản phẩm trước.");
+                window.location.href = "index.html";
+                return;
+            }
+
+            var hoten = document.getElementById("hoten").value;
+            var sdt = document.getElementById("sdt").value;
+            var diachi = document.getElementById("diachi").value;
+            var phuongthuc = document.getElementById("phuongthuc").value;
+            var ghichu = document.getElementById("ghichu").value;
+
+            let tongTienCuoiCung = tongTienTamTinh;
+            let nguoiDungHienTai = DB.layNguoiDungHienTai();
+            let tenNguoiMua = nguoiDungHienTai ? nguoiDungHienTai.username : "khach_vang_lai";
+
+            // Tạo mã đơn hàng
+            let maDonHang = "DH" + Math.floor(1000 + Math.random() * 9000);
+
+            let donHangMoi = {
+                id: maDonHang,
+                username: tenNguoiMua,
+                fullname: hoten,
+                phone: sdt,
+                address: diachi,
+                payment: phuongthuc,
+                note: ghichu,
+                items: danhSachGioHang,
+                voucherCode: "",
+                discount: 0,
+                total: tongTienCuoiCung,
+                status: "chờ xác nhận",
+                date: new Date().toLocaleString("vi-VN")
+            };
+
+            // Lưu đơn hàng vào cơ sở dữ liệu
+            let danhSachDonHang = DB.layDanhSachDonHang();
+            danhSachDonHang.unshift(donHangMoi);
+            DB.luuDanhSachDonHang(danhSachDonHang);
+
+            // Cập nhật số lượng đã bán cho sản phẩm
+            let danhSachSanPham = DB.layDanhSachSanPham();
+            danhSachGioHang.forEach(function(mon) {
+                let sanPham = danhSachSanPham.find(function(muc) { return muc.masp === mon.masp; });
+                if (sanPham) {
+                    sanPham.daban = (sanPham.daban || 0) + Number(mon.soluong);
+                }
+            });
+            DB.luuDanhSachSanPham(danhSachSanPham);
+
+            alert("🎉 ĐẶT HÀNG THÀNH CÔNG!\n\nMã đơn hàng của bạn là: " + maDonHang + "\nTrạng thái: Chờ xác nhận\nTổng tiền: $" + tongTienCuoiCung + "\n\nBạn có thể vào mục 'Đơn hàng của tôi' để theo dõi quá trình giao hàng!");
+
+            // Xóa sạch giỏ hàng
+            sessionStorage.removeItem("giohang");
+
+            // Chuyển sang trang theo dõi đơn hàng
+            window.location.href = "donhang.html";
+        }
+
+        window.onload = function() {
+            hienThiDonHang();
+        };
+    </script>
+</body>
+</html>

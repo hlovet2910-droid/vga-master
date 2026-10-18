@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ Thống Quản Trị - VGA Master Admin</title>
+    <link rel="stylesheet" href="./css/style.css">
+    <script src="./js/storage.js"></script>
+    <style>
+        .admin-layout {
+            display: grid;
+            grid-template-columns: 240px 1fr;
+            min-height: 85vh;
+            border-top: 1px solid #e2e8f0;
+        }
+        .admin-sidebar {
+            background-color: #0f172a;
+            color: #e2e8f0;
+            padding: 20px 0;
+        }
+        .admin-menu {
+            list-style: none;
+        }
+        .admin-menu li a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 20px;
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+        .admin-menu li a:hover,
+        .admin-menu li a.active {
+            background-color: #1e293b;
+            color: #38bdf8;
+            border-left-color: #38bdf8;
+        }
+        .admin-content {
+            padding: 25px 30px;
+            background-color: #f8fafc;
+        }
+        .admin-tab {
+            display: none;
+        }
+        .admin-tab.active {
+            display: block;
+        }
+        .card-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+            margin-top: 15px;
+            font-size: 13px;
+        }
+        .card-table th, .card-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #e2e8f0;
+            text-align: left;
+            vertical-align: middle;
+        }
+        .card-table th {
+            background-color: #f1f5f9;
+            color: #475569;
+            font-weight: bold;
+        }
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 12px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: opacity 0.2s;
+        }
+        .btn-sm:hover { opacity: 0.9; }
+        .btn-primary { background: #2563eb; color: #fff; }
+        .btn-success { background: #16a34a; color: #fff; }
+        .btn-danger { background: #ef4444; color: #fff; }
+        .btn-warning { background: #f59e0b; color: #fff; }
+    </style>
+</head>
+<body>
+
+    <div class="container" style="padding-bottom:0;">
+        <!-- Header Admin -->
+        <div class="thanhtoan-header">
+            <div>
+                <h1>🛠️ BẢNG ĐIỀU KHIỂN QUẢN TRỊ (DÀNH CHO QUẢN TRỊ VIÊN)</h1>
+                <p style="color:#94a3b8; font-size:13px; margin-top:4px;">Quản lý toàn diện: Sản phẩm, Đơn hàng, Khách hàng & Đánh giá</p>
+            </div>
+            <div style="display:flex; gap:10px; align-items:center;">
+                <span id="adminGreeting" style="font-size:13px; color:#38bdf8; font-weight:bold;"></span>
+                <a href="index.html" class="btn-quaylai">🌐 Về Cửa Hàng</a>
+            </div>
+        </div>
+
+        <div class="admin-layout">
+            <!-- THANH MENU  -->
+            <div class="admin-sidebar">
+                <ul class="admin-menu">
+                    <li><a href="javascript:void(0)" class="active" onclick="chuyenTab('tab-products')">💻 1. Quản lý sản phẩm</a></li>
+                    <li><a href="javascript:void(0)" onclick="chuyenTab('tab-orders')">📦 2. Quản lý đơn hàng</a></li>
+                    <li><a href="javascript:void(0)" onclick="chuyenTab('tab-customers')">👥 3. Quản lý khách hàng</a></li>
+                    <li><a href="javascript:void(0)" onclick="chuyenTab('tab-reviews')">⭐ 4. Quản lý đánh giá</a></li>
+                </ul>
+            </div>
+
+            <!-- KHU VỰC QUẢN LÝ CỦA ADMIN -->
+            <div class="admin-content">
+
+                <!-- QUẢN LÝ SẢN PHẨM (THÊM, XÓA, SỬA) -->
+                <div id="tab-products" class="admin-tab active">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <h2>💻 Quản Lý Sản Phẩm (Thêm, Xóa, Sửa)</h2>
+                        <button class="btn-sm btn-primary" onclick="moHopThoaiThemSanPham()">+ Thêm Card Đồ Họa Mới</button>
+                    </div>
+                    <table class="card-table">
+                        <thead>
+                            <tr>
+                                <th width="10%">Hình</th>
+                                <th width="10%">Mã</th>
+                                <th width="30%">Tên Card</th>
+                                <th width="15%">Giá Bán</th>
+                                <th width="15%">Đã Bán</th>
+                                <th width="20%">Thao Tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tblProducts"></tbody>
+                    </table>
+                </div>
+
+                <!-- QUẢN LÝ ĐƠN HÀNG (SỬA TRẠNG THÁI) -->
+                <div id="tab-orders" class="admin-tab">
+                    <h2>📦 Quản Lý Đơn Hàng</h2>
+                    <p style="color:#64748b; font-size:13px; margin:6px 0 15px;">
+                        Quy trình trạng thái: <strong>chờ xác nhận ➔ xác nhận đơn hàng ➔ đang giao ➔ đã giao ➔ thành công</strong>
+                    </p>
+                    <table class="card-table">
+                        <thead>
+                            <tr>
+                                <th>Mã Đơn</th>
+                                <th>Khách Hàng</th>
+                                <th>Ngày Đặt</th>
+                                <th>Tổng Tiền</th>
+                                <th>Trạng Thái Hiện Tại</th>
+                                <th>Cập Nhật Trạng Thái</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tblOrders"></tbody>
+                    </table>
+                </div>
+
+                <!-- QUẢN LÝ KHÁCH HÀNG (XEM, KHÓA, XÓA TK) -->
+                <div id="tab-customers" class="admin-tab">
+                    <h2>👥 Quản Lý Khách Hàng (Xem & Khóa)</h2>
+                    <p style="color:#64748b; font-size:13px; margin:6px 0 15px;">Danh sách tài khoản khách hàng đăng ký trên hệ thống</p>
+                    <table class="card-table">
+                        <thead>
+                            <tr>
+                                <th>Mã KH</th>
+                                <th>Tên Khách Hàng</th>
+                                <th>Tên Đăng Nhập</th>
+                                <th>Hộp Thư (Email)</th>
+                                <th>Trạng Thái</th>
+                                <th>Thao Tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tblCustomers"></tbody>
+                    </table>
+                </div>
+
+                <!-- QUẢN LÝ ĐÁNH GIÁ (XEM & XÓA) -->
+                <div id="tab-reviews" class="admin-tab">
+                    <h2>⭐ Quản Lý Bình Luận & Đánh Giá Sản Phẩm</h2>
+                    <table class="card-table">
+                        <thead>
+                            <tr>
+                                <th>Mã Card</th>
+                                <th>Người Đánh Giá</th>
+                                <th>Số Sao</th>
+                                <th>Nội Dung Nhận Xét</th>
+                                <th>Ngày Gửi</th>
+                                <th>Thao Tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tblReviews"></tbody>
+                    </table>
+                </div>
+
+
+
+            </div>
+        </div>
+    </div>
+        <!-- SCRIPT LOGIC QUẢN TRỊ ADMIN -->
+    <script>
+
+        // Kiểm tra quyền truy cập Admin
+        (function kiemTraQuyenAdmin() {
+            let nguoiDung = DB.layNguoiDungHienTai();
+            if (!nguoiDung || nguoiDung.role !== "admin") {
+                alert("⛔ BẠN KHÔNG CÓ QUYỀN TRUY CẬP TRANG QUẢN TRỊ!\n\nTrang này chỉ dành cho tài khoản Quản Trị Viên (Admin).\nVui lòng đăng nhập bằng tài khoản admin (mật khẩu: 123).");
+                window.location.href = "index.html";
+            }
+        })();
+
+        // Chuyển đổi tab hiển thị trong trang quản trị
+        function chuyenTab(maTab) {
+            document.querySelectorAll(".admin-tab").forEach(function(phanTu) { phanTu.classList.remove("active"); });
+            document.querySelectorAll(".admin-menu a").forEach(function(phanTu) { phanTu.classList.remove("active"); });
+            
+            let noiDungTab = document.getElementById(maTab);
+            if (noiDungTab) noiDungTab.classList.add("active");
+
+            let lienKetMenu = document.querySelector(".admin-menu a[onclick*='" + maTab + "']");
+            if (lienKetMenu) lienKetMenu.classList.add("active");
+
+            // Tải dữ liệu tương ứng tab
+            if (maTab === 'tab-products') hienThiSanPhamAdmin();
+            if (maTab === 'tab-orders') hienThiDonHangAdmin();
+            if (maTab === 'tab-customers') hienThiKhachHangAdmin();
+            if (maTab === 'tab-reviews') hienThiDanhGiaAdmin();
+        }
+
+        // 1. Quản lý sản phẩm
+        function hienThiSanPhamAdmin() {
+            let danhSachSanPham = DB.layDanhSachSanPham();
+            let phanThanBang = document.getElementById("tblProducts");
+            let chuoiHtml = "";
+            danhSachSanPham.forEach(function(sanPham) {
+                chuoiHtml += `
+                    <tr>
+                        <td><img src="./image/${sanPham.hinh}" style="width:40px; height:30px; object-fit:contain; border:1px solid #e2e8f0; border-radius:4px;"></td>
+                        <td><strong>${sanPham.masp}</strong></td>
+                        <td>${sanPham.tensp}</td>
+                        <td style="color:#e11d48; font-weight:bold;">$${sanPham.gia}</td>
+                        <td><strong>${sanPham.daban || 0}</strong> chiếc</td>
+                        <td>
+                            <button class="btn-sm btn-primary" onclick="suaSanPham('${sanPham.masp}')">Sửa</button>
+                            <button class="btn-sm btn-danger" onclick="xoaSanPham('${sanPham.masp}')">Xóa</button>
+                        </td>
+                    </tr>
+                `;
+            });
+            phanThanBang.innerHTML = chuoiHtml;
+        }
+
+        function moHopThoaiThemSanPham() {
+            let masp = prompt("Nhập mã sản phẩm mới (VD: VGA16):");
+            if (!masp) return;
+            let tensp = prompt("Nhập tên Card đồ họa:");
+            if (!tensp) return;
+            let gia = Number(prompt("Nhập đơn giá ($):") || 0);
+            let ctsp = prompt("Nhập thông số kỹ thuật (VRAM, Bus, Tản nhiệt):") || "Chính hãng bảo hành 36 tháng";
+            let hinh = prompt("Tên file ảnh (VD: rtx4090.png hoặc baner3.jpg):") || "rtx4090.png";
+
+            let danhSachSanPham = DB.layDanhSachSanPham();
+            danhSachSanPham.push({ masp: masp, tensp: tensp, gia: gia, giagoc: gia, khuyenmai: 0, ctsp: ctsp, hinh: hinh, daban: 0 });
+            DB.luuDanhSachSanPham(danhSachSanPham);
+            alert("Đã thêm card đồ họa mới thành công!");
+            hienThiSanPhamAdmin();
+        }
+
+        function suaSanPham(masp) {
+            let danhSachSanPham = DB.layDanhSachSanPham();
+            let sanPham = danhSachSanPham.find(function(muc) { return muc.masp === masp; });
+            if (!sanPham) return;
+
+            let tenMoi = prompt("Sửa tên Card đồ họa:", sanPham.tensp);
+            if (tenMoi) sanPham.tensp = tenMoi;
+            let giaMoi = prompt("Sửa giá bán ($):", sanPham.gia);
+            if (giaMoi) {
+                sanPham.gia = Number(giaMoi);
+                sanPham.giagoc = Number(giaMoi);
+            }
+            let thongSoMoi = prompt("Sửa thông số kỹ thuật:", sanPham.ctsp);
+            if (thongSoMoi) sanPham.ctsp = thongSoMoi;
+
+            DB.luuDanhSachSanPham(danhSachSanPham);
+            alert("Đã cập nhật sản phẩm!");
+            hienThiSanPhamAdmin();
+        }
+
+        function xoaSanPham(masp) {
+            if (!confirm("Bạn có chắc chắn muốn XÓA sản phẩm " + masp + "?")) return;
+            let danhSachSanPham = DB.layDanhSachSanPham();
+            danhSachSanPham = danhSachSanPham.filter(function(muc) { return muc.masp !== masp; });
+            DB.luuDanhSachSanPham(danhSachSanPham);
+            hienThiSanPhamAdmin();
+        }
+
+        // 2. Quản lý đơn hàng
+        function hienThiDonHangAdmin() {
+            let danhSachDonHang = DB.layDanhSachDonHang();
+            let phanThanBang = document.getElementById("tblOrders");
+            let chuoiHtml = "";
+            danhSachDonHang.forEach(function(donHang) {
+                chuoiHtml += `
+                    <tr>
+                        <td><strong>#${donHang.id}</strong></td>
+                        <td>${donHang.fullname} (${donHang.phone})</td>
+                        <td>${donHang.date}</td>
+                        <td style="color:#e11d48; font-weight:bold;">$${donHang.total}</td>
+                        <td><span style="font-weight:bold; color:#0284c7;">${donHang.status.toUpperCase()}</span></td>
+                        <td>
+                            <select onchange="doiTrangThaiDon('${donHang.id}', this.value)" style="padding:4px 8px; border-radius:4px; font-size:12px;">
+                                <option value="chờ xác nhận" ${donHang.status === "chờ xác nhận" ? "selected" : ""}>Chờ xác nhận</option>
+                                <option value="xác nhận đơn hàng" ${donHang.status === "xác nhận đơn hàng" ? "selected" : ""}>Xác nhận đơn hàng</option>
+                                <option value="đang giao" ${donHang.status === "đang giao" ? "selected" : ""}>Đang giao</option>
+                                <option value="đã giao" ${donHang.status === "đã giao" ? "selected" : ""}>Đã giao</option>
+                                <option value="thành công" ${donHang.status === "thành công" ? "selected" : ""}>Thành công</option>
+                                <option value="đã hủy" ${donHang.status === "đã hủy" ? "selected" : ""}>Đã hủy</option>
+                            </select>
+                        </td>
+                    </tr>
+                `;
+            });
+            phanThanBang.innerHTML = chuoiHtml;
+        }
+
+        function doiTrangThaiDon(maDonHang, trangThaiMoi) {
+            let danhSachDonHang = DB.layDanhSachDonHang();
+            let donHang = danhSachDonHang.find(function(muc) { return muc.id === maDonHang; });
+            if (donHang) {
+                donHang.status = trangThaiMoi;
+                DB.luuDanhSachDonHang(danhSachDonHang);
+                alert("Đã cập nhật trạng thái đơn hàng #" + maDonHang + " thành: " + trangThaiMoi);
+                hienThiDonHangAdmin();
+            }
+        }
+
+        // 3. Quản lý khách hàng
+        function hienThiKhachHangAdmin() {
+            let danhSachNguoiDung = DB.layDanhSachNguoiDung().filter(function(nguoiDung) { return nguoiDung.role === "user"; });
+            let phanThanBang = document.getElementById("tblCustomers");
+            let chuoiHtml = "";
+            danhSachNguoiDung.forEach(function(nguoiDung, chiMuc) {
+                let maHienThi = typeof nguoiDung.id === "number" && nguoiDung.id < 1000 ? "#" + nguoiDung.id : "#KH" + (chiMuc + 1);
+                let theTrangThai = nguoiDung.status === "active" ? '<span style="color:#16a34a; font-weight:bold;">Hoạt động</span>' : '<span style="color:#ef4444; font-weight:bold;">Đang bị khóa</span>';
+                let nutChuyenTrangThai = nguoiDung.status === "active" ? `<button class="btn-sm btn-danger" onclick="khoaNguoiDung('${nguoiDung.id}', 'locked')">Khóa tài khoản</button>` : `<button class="btn-sm btn-success" onclick="khoaNguoiDung('${nguoiDung.id}', 'active')">Mở khóa</button>`;
+
+                chuoiHtml += `
+                    <tr>
+                        <td><strong>${maHienThi}</strong></td>
+                        <td>${nguoiDung.fullname}</td>
+                        <td><strong>${nguoiDung.username}</strong></td>
+                        <td>${nguoiDung.email || (nguoiDung.username + '@gmail.com')}</td>
+                        <td>${theTrangThai}</td>
+                        <td>
+                            ${nutChuyenTrangThai}
+                            <button class="btn-sm btn-danger" onclick="xoaKhachHang('${nguoiDung.id}')" title="Xóa vĩnh viễn tài khoản">🗑️ Xóa tài khoản</button>
+                        </td>
+                    </tr>
+                `;
+            });
+            phanThanBang.innerHTML = chuoiHtml;
+        }
+
+        function xoaKhachHang(maNguoiDung) {
+            let danhSachNguoiDung = DB.layDanhSachNguoiDung();
+            let nguoiDung = danhSachNguoiDung.find(function(muc) { return String(muc.id) === String(maNguoiDung); });
+            if (!nguoiDung) return;
+
+            if (!confirm("⚠️ Bạn có chắc chắn muốn XÓA VĨNH VIỄN tài khoản khách hàng @" + nguoiDung.username + " (" + nguoiDung.fullname + ") khỏi hệ thống?")) {
+                return;
+            }
+
+            danhSachNguoiDung = danhSachNguoiDung.filter(function(muc) { return String(muc.id) !== String(maNguoiDung); });
+            DB.luuDanhSachNguoiDung(danhSachNguoiDung);
+            alert("✔ Đã xóa tài khoản khách hàng @" + nguoiDung.username + " thành công!");
+            hienThiKhachHangAdmin();
+        }
+
+        function khoaNguoiDung(maNguoiDung, trangThaiMoi) {
+            let danhSachNguoiDung = DB.layDanhSachNguoiDung();
+            let nguoiDung = danhSachNguoiDung.find(function(muc) { return String(muc.id) === String(maNguoiDung); });
+            if (nguoiDung) {
+                nguoiDung.status = trangThaiMoi;
+                DB.luuDanhSachNguoiDung(danhSachNguoiDung);
+                alert("Đã " + (trangThaiMoi === "locked" ? "KHÓA" : "MỞ KHÓA") + " tài khoản @" + nguoiDung.username);
+                hienThiKhachHangAdmin();
+            }
+        }
+
+        // 4. Quản lý đánh giá
+        function hienThiDanhGiaAdmin() {
+            let danhSachDanhGia = DB.layDanhSachDanhGia();
+            let phanThanBang = document.getElementById("tblReviews");
+            let chuoiHtml = "";
+            danhSachDanhGia.forEach(function(danhGia) {
+                chuoiHtml += `
+                    <tr>
+                        <td><strong>${danhGia.masp}</strong></td>
+                        <td>${danhGia.username}</td>
+                        <td>${"⭐".repeat(danhGia.rating)}</td>
+                        <td>${danhGia.comment}</td>
+                        <td>${danhGia.date}</td>
+                        <td>
+                            <button class="btn-sm btn-danger" onclick="xoaDanhGia(${danhGia.id})">Xóa</button>
+                        </td>
+                    </tr>
+                `;
+            });
+            phanThanBang.innerHTML = chuoiHtml;
+        }
+
+        function xoaDanhGia(maDanhGia) {
+            if (!confirm("Xóa đánh giá này?")) return;
+            let danhSachDanhGia = DB.layDanhSachDanhGia().filter(function(danhGia) { return danhGia.id !== maDanhGia; });
+            DB.luuDanhSachDanhGia(danhSachDanhGia);
+            hienThiDanhGiaAdmin();
+        }
+
+        window.onload = function() {
+            let nguoiDung = DB.layNguoiDungHienTai();
+            if (nguoiDung) {
+                let vaiTro = nguoiDung.role === "admin" ? "Quản Trị Viên" : "Khách Hàng";
+                document.getElementById("adminGreeting").innerText = "Xin chào, " + (nguoiDung.fullname || nguoiDung.username) + " (" + vaiTro + ")";
+            }
+            hienThiSanPhamAdmin();
+        };
+    </script>
+</body>
+</html>

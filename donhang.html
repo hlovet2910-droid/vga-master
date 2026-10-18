@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lịch Sử Mua Hàng & Quá Trình Giao Hàng</title>
+    <link rel="stylesheet" href="./css/style.css">
+    <script src="./js/storage.js"></script>
+    <style>
+        .order-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+        }
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 12px;
+            margin-bottom: 15px;
+        }
+        /* Thanh tiến trình giao hàng trực quan */
+        .tracking-bar {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            margin: 25px 0 20px;
+            padding: 0 10px;
+        }
+        .tracking-bar::before {
+            content: '';
+            position: absolute;
+            top: 14px;
+            left: 40px;
+            right: 40px;
+            height: 4px;
+            background: #e2e8f0;
+            z-index: 1;
+        }
+        .step {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            flex: 1;
+        }
+        .step-circle {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #e2e8f0;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 8px;
+            font-weight: bold;
+            font-size: 13px;
+            border: 2px solid #fff;
+        }
+        .step.active .step-circle {
+            background: #2563eb;
+            color: #fff;
+            box-shadow: 0 0 0 3px rgba(37,99,235,0.2);
+        }
+        .step.completed .step-circle {
+            background: #16a34a;
+            color: #fff;
+        }
+        .step-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #64748b;
+        }
+        .step.active .step-label {
+            color: #2563eb;
+            font-weight: bold;
+        }
+        .step.completed .step-label {
+            color: #16a34a;
+        }
+        .btn-cancel-order {
+            background-color: #ef4444;
+            color: #ffffff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-cancel-order:hover {
+            background-color: #dc2626;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="thanhtoan-header">
+            <div>
+                <h1>📦 LỊCH SỬ MUA HÀNG & QUÁ TRÌNH GIAO HÀNG</h1>
+                <p style="color:#94a3b8; font-size:13px; margin-top:4px;">Theo dõi trực quan trạng thái vận chuyển và quản lý đơn hàng</p>
+            </div>
+            <a href="index.html" class="btn-quaylai">⬅ Về Trang Chủ</a>
+        </div>
+
+        <div style="padding: 25px 30px;" id="orderListArea">
+            <!-- Danh sách đơn hàng được xuất tại đây -->
+        </div>
+
+        <!-- CHÂN TRANG WEBSITE (FOOTER CHUẨN THƯƠNG MẠI ĐIỆN TỬ) -->
+        <footer class="site-footer">
+            <!-- 4 Cột thông tin chính -->
+            <div class="footer-grid">
+                <!-- Cột 1: Tổng đài & Kết nối -->
+                <div class="footer-col">
+                    <h4>📞 TỔNG ĐÀI HỖ TRỢ MIỄN PHÍ</h4>
+                    <ul class="footer-list">
+                        <li>Tư vấn mua hàng: <strong>1800.6868</strong> (Nhánh 1)</li>
+                        <li>Hỗ trợ kỹ thuật: <strong>1800.6868</strong> (Nhánh 2)</li>
+                        <li>Góp ý, khiếu nại: <strong>1800.8888</strong> (8h00 - 21h30)</li>
+                    </ul>
+                </div>
+
+                <!-- Cột 2: Thông tin & Quy định -->
+                <div class="footer-col">
+                    <h4>📋 QUY CHẾ & CHÍNH SÁCH</h4>
+                    <ul class="footer-links">
+                        <li><a href="javascript:void(0)">Quy chế hoạt động sàn TMĐT</a></li>
+                        <li><a href="javascript:void(0)">Chính sách bảo hành 36 tháng</a></li>
+                        <li><a href="javascript:void(0)">Chính sách đổi trả 1 - 1 trong 30 ngày</a></li>
+                        <li><a href="javascript:void(0)">Chính sách giao hàng hỏa tốc 2H</a></li>
+                        <li><a href="javascript:void(0)">Chính sách kiểm hàng khi nhận (COD)</a></li>
+                        <li><a href="javascript:void(0)">Chính sách bảo mật thông tin cá nhân</a></li>
+                        <li><a href="javascript:void(0)">Bảng giá vệ sinh & tra keo tản nhiệt</a></li>
+                    </ul>
+                </div>
+
+                <!-- Cột 3: Hướng dẫn & Dịch vụ -->
+                <div class="footer-col">
+                    <h4>🛒 HỖ TRỢ KHÁCH HÀNG</h4>
+                    <ul class="footer-links">
+                        <li><a href="javascript:void(0)">Hướng dẫn mua hàng & đặt hàng online</a></li>
+                        <li><a href="javascript:void(0)">Hướng dẫn thanh toán VietQR & Thẻ</a></li>
+                        <li><a href="javascript:void(0)">Hướng dẫn mua trả góp 0% qua thẻ</a></li>
+                        <li><a href="donhang.html">Tra cứu tiến trình vận chuyển đơn hàng</a></li>
+                        <li><a href="javascript:void(0)">Tra cứu hóa đơn điện tử (e-Invoice)</a></li>
+                        <li><a href="javascript:void(0)">Tra cứu bảo hành theo Serial card VGA</a></li>
+                        <li><a href="javascript:void(0)">Câu hỏi thường gặp khi mua linh kiện</a></li>
+                    </ul>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+
+        // Quy trình 5 bước vận chuyển giao hàng
+
+
+        const CAC_BUOC_VAN_CHUYEN = [
+            { key: "chờ xác nhận", name: "Chờ xác nhận" },
+            { key: "xác nhận đơn hàng", name: "Đã xác nhận" },
+            { key: "đang giao", name: "Đang giao hàng" },
+            { key: "đã giao", name: "Đã giao đến nơi" },
+            { key: "thành công", name: "Hoàn tất thành công" }
+        ];
+
+        // Hiển thị lịch sử đơn hàng của khách
+
+
+        function hienThiDanhSachDonHang() {
+            let nguoiDungHienTai = DB.layNguoiDungHienTai();
+            let tatCaDonHang = DB.layDanhSachDonHang();
+            let khuVucDonHang = document.getElementById("orderListArea");
+
+            // Lọc đơn của khách đang đăng nhập, hoặc hiện tất cả nếu là admin
+            let donHangCuaToi = tatCaDonHang;
+            if (nguoiDungHienTai && nguoiDungHienTai.role !== "admin") {
+                donHangCuaToi = tatCaDonHang.filter(function(donHang) { return donHang.username === nguoiDungHienTai.username; });
+            }
+
+            if (!donHangCuaToi || donHangCuaToi.length === 0) {
+                khuVucDonHang.innerHTML = `
+                    <div style="text-align:center; padding:60px 20px; color:#64748b;">
+                        <div style="font-size:48px; margin-bottom:15px;">🛒</div>
+                        <h3>Bạn chưa có đơn mua hàng nào!</h3>
+                        <p style="margin-top:8px;">Hãy dạo qua cửa hàng và chọn cho mình chiếc Card đồ họa ưng ý nhất.</p>
+                        <a href="index.html" style="display:inline-block; margin-top:15px; background:#2563eb; color:#fff; padding:10px 20px; border-radius:6px; text-decoration:none; font-weight:bold;">Mua Sắm Ngay</a>
+                    </div>
+                `;
+                return;
+            }
+
+            let chuoiHtml = "";
+            donHangCuaToi.forEach(function(donHang) {
+                let theTrangThai = "";
+                if (donHang.status === "thành công") theTrangThai = '<span style="background:#16a34a; color:#fff; padding:4px 10px; border-radius:12px; font-size:12px; font-weight:bold;">✔ Thành công</span>';
+                else if (donHang.status === "đã hủy") theTrangThai = '<span style="background:#ef4444; color:#fff; padding:4px 10px; border-radius:12px; font-size:12px; font-weight:bold;">✖ Đã hủy</span>';
+                else theTrangThai = '<span style="background:#0284c7; color:#fff; padding:4px 10px; border-radius:12px; font-size:12px; font-weight:bold;">⏳ ' + donHang.status.toUpperCase() + '</span>';
+
+                // Tạo thanh tiến trình (nếu chưa hủy)
+                let htmlTienTrinh = "";
+                if (donHang.status !== "đã hủy") {
+                    let viTriHienTai = CAC_BUOC_VAN_CHUYEN.findIndex(function(buoc) { return buoc.key === donHang.status; });
+                    if (viTriHienTai === -1) viTriHienTai = 0;
+
+                    htmlTienTrinh = '<div class="tracking-bar">';
+                    CAC_BUOC_VAN_CHUYEN.forEach(function(buoc, viTri) {
+                        let lopCss = "";
+                        if (viTri < viTriHienTai) lopCss = "completed";
+                        else if (viTri === viTriHienTai) lopCss = "active";
+                        let bieuTuong = viTri < viTriHienTai ? "✓" : (viTri + 1);
+
+                        htmlTienTrinh += `
+                            <div class="step ${lopCss}">
+                                <div class="step-circle">${bieuTuong}</div>
+                                <div class="step-label">${buoc.name}</div>
+                            </div>
+                        `;
+                    });
+                    htmlTienTrinh += '</div>';
+                } else {
+                    htmlTienTrinh = '<div style="background:#fee2e2; color:#b91c1c; padding:12px; border-radius:6px; margin:15px 0; font-weight:600; text-align:center;">Đơn hàng này đã bị hủy.</div>';
+                }
+
+                // Danh sách sản phẩm trong đơn
+                let htmlMonHang = "";
+                donHang.items.forEach(function(mon) {
+                    htmlMonHang += `
+                        <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid #f1f5f9;">
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                <img src="./image/${mon.hinh}" style="width:50px; height:40px; object-fit:contain; border:1px solid #e2e8f0; border-radius:4px;">
+                                <div>
+                                    <strong style="font-size:13px; color:#0f172a;">${mon.tensp}</strong><br>
+                                    <small style="color:#64748b;">Mã: ${mon.masp} | Đơn giá: $${mon.gia}</small>
+                                </div>
+                            </div>
+                            <div style="font-size:13px;">
+                                Số lượng: <strong>x${mon.soluong}</strong> | Thành tiền: <strong style="color:#e11d48;">$${Number(mon.gia) * Number(mon.soluong)}</strong>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                // Nút hủy đơn hàng: Chỉ được hủy khi đang "chờ xác nhận"
+                let nutHuy = "";
+                if (donHang.status === "chờ xác nhận") {
+                    nutHuy = `<button class="btn-cancel-order" onclick="huyDonHang('${donHang.id}')">🚫 Hủy Mua Hàng</button>`;
+                }
+
+                chuoiHtml += `
+                    <div class="order-card">
+                        <div class="order-header">
+                            <div>
+                                <strong style="font-size:16px; color:#0f172a;">Đơn hàng: #${donHang.id}</strong>
+                                <span style="color:#64748b; font-size:12px; margin-left:10px;">Ngày đặt: ${donHang.date}</span>
+                            </div>
+                            <div>${theTrangThai}</div>
+                        </div>
+
+                        ${htmlTienTrinh}
+
+                        <div style="background:#f8fafc; padding:12px; border-radius:6px; margin-bottom:12px; font-size:13px;">
+                            <strong>Người nhận:</strong> ${donHang.fullname} (${donHang.phone})<br>
+                            <strong>Địa chỉ giao:</strong> ${donHang.address}<br>
+                            <strong>Hình thức thanh toán:</strong> ${donHang.payment}
+                        </div>
+
+                        <div style="margin-bottom:12px;">
+                            ${htmlMonHang}
+                        </div>
+
+                        <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #e2e8f0; padding-top:12px;">
+                            <div>${nutHuy}</div>
+                            <div style="font-size:16px;">
+                                Tổng thanh toán: <strong style="color:#e11d48; font-size:19px;">$${donHang.total}</strong>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            khuVucDonHang.innerHTML = chuoiHtml;
+        }
+
+        // Hủy đơn hàng khi ở bước "chờ xác nhận"
+        function huyDonHang(maDonHang) {
+            if (!confirm("Bạn có chắc chắn muốn HỦY đơn mua hàng #" + maDonHang + " không?")) {
+                return;
+            }
+
+            let tatCaDonHang = DB.layDanhSachDonHang();
+            let viTri = tatCaDonHang.findIndex(function(donHang) { return donHang.id === maDonHang; });
+
+            if (viTri === -1) {
+                alert("Không tìm thấy đơn hàng!");
+                return;
+            }
+
+            if (tatCaDonHang[viTri].status !== "chờ xác nhận") {
+                alert("Đơn hàng đã được bên cửa hàng xử lý vận chuyển nên không thể hủy trực tiếp!");
+                return;
+            }
+
+            tatCaDonHang[viTri].status = "đã hủy";
+            DB.luuDanhSachDonHang(tatCaDonHang);
+
+            alert("Đã hủy đơn hàng thành công!");
+            hienThiDanhSachDonHang();
+        }
+
+        window.onload = function() {
+            hienThiDanhSachDonHang();
+        };
+    </script>
+</body>
+</html>

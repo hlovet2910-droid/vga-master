@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cửa Hàng Card Đồ Họa VGA Master - Chính Hãng 2026</title>
+    <!-- File CSS định dạng giao diện chung (bao gồm topbar, modal, giỏ hàng, thẻ sản phẩm) -->
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+
+    <div class="container">
+        <!-- Topbar điều hướng & tìm kiếm -->
+        <div class="user-topbar">
+            <div class="brand-logo">
+                ⚡ VGA <span>MASTER</span>
+            </div>
+
+            <div class="search-box">
+                <span>🔍</span>
+                <input type="text" id="searchKeyword" placeholder="Tìm kiếm card đồ họa (VD: 4090, ASUS, RX 7900...)" oninput="timKiemSanPham()">
+            </div>
+
+            <div id="authArea"></div>
+        </div>
+
+        <!-- Banner & Giỏ hàng -->
+        <header>
+            <div>
+                <img id="img" alt="banner" src="./image/baner3.jpg">
+            </div>
+            
+            <!-- NÚT ICON GIỎ HÀNG -->
+            <div class="top-right">
+                <img onclick="hienThiGioHang()" height="50px" width="50px" src="./image/icon-gio-hang.png" title="Nhấp để xem giỏ hàng" />
+            </div>
+
+            <!-- BẢNG GIỎ HÀNG NỔI -->
+            <div>
+                <div id="showgiohang">
+                    <h3 class="cart-title">
+                        <span>🛒 GIỎ HÀNG CỦA BẠN</span>
+                        <button onclick="hienThiGioHang()" class="btn-cart-close">✕</button>
+                    </h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Sản phẩm</th>
+                                <th>Tên Card</th>
+                                <th>Đơn giá</th>
+                                <th>Số lượng</th>
+                                <th>Thành tiền</th>
+                                <th>Xóa</th>
+                            </tr>
+                        </thead>
+                        <tbody id="danhsachsanpham"></tbody>
+                    </table>
+                </div>
+            </div>
+        </header>
+
+        <!-- TIÊU ĐỀ DANH MỤC SẢN PHẨM -->
+        <div class="tieude-muc">🔥 DANH SÁCH CARD ĐỒ HỌA MÁY TÍNH CHÍNH HÃNG</div>
+
+        <!-- Danh sách card đồ họa -->
+        <div id="showsanpham"></div>
+
+        <!-- CHÂN TRANG WEBSITE (FOOTER CHUẨN THƯƠNG MẠI ĐIỆN TỬ) -->
+        <footer class="site-footer">
+            <!-- 4 Cột thông tin chính -->
+            <div class="footer-grid">
+                <!-- Cột 1: Tổng đài & Kết nối -->
+                <div class="footer-col">
+                    <h4>📞 TỔNG ĐÀI HỖ TRỢ MIỄN PHÍ</h4>
+                    <ul class="footer-list">
+                        <li>Tư vấn mua hàng: <strong>1800.6868</strong> (Nhánh 1)</li>
+                        <li>Hỗ trợ kỹ thuật: <strong>1800.6868</strong> (Nhánh 2)</li>
+                        <li>Góp ý, khiếu nại: <strong>1800.8888</strong> (8h00 - 21h30)</li>
+                    </ul>
+                </div>
+
+                <!-- Cột 2: Thông tin & Quy định -->
+                <div class="footer-col">
+                    <h4>📋 QUY CHẾ & CHÍNH SÁCH</h4>
+                    <ul class="footer-links">
+                        <li><a href="javascript:void(0)">Quy chế hoạt động sàn TMĐT</a></li>
+                        <li><a href="javascript:void(0)">Chính sách bảo hành 36 tháng</a></li>
+                        <li><a href="javascript:void(0)">Chính sách đổi trả 1 - 1 trong 30 ngày</a></li>
+                        <li><a href="javascript:void(0)">Chính sách giao hàng hỏa tốc 2H</a></li>
+                        <li><a href="javascript:void(0)">Chính sách kiểm hàng khi nhận (COD)</a></li>
+                        <li><a href="javascript:void(0)">Chính sách bảo mật thông tin cá nhân</a></li>
+                        <li><a href="javascript:void(0)">Bảng giá vệ sinh & tra keo tản nhiệt</a></li>
+                    </ul>
+                </div>
+
+                <!-- Cột 3: Hướng dẫn & Dịch vụ -->
+                <div class="footer-col">
+                    <h4>🛒 HỖ TRỢ KHÁCH HÀNG</h4>
+                    <ul class="footer-links">
+                        <li><a href="javascript:void(0)">Hướng dẫn mua hàng & đặt hàng online</a></li>
+                        <li><a href="javascript:void(0)">Hướng dẫn thanh toán VietQR & Thẻ</a></li>
+                        <li><a href="javascript:void(0)">Hướng dẫn mua trả góp 0% qua thẻ</a></li>
+                        <li><a href="donhang.html">Tra cứu tiến trình vận chuyển đơn hàng</a></li>
+                        <li><a href="javascript:void(0)">Tra cứu hóa đơn điện tử (e-Invoice)</a></li>
+                        <li><a href="javascript:void(0)">Tra cứu bảo hành theo Serial card VGA</a></li>
+                        <li><a href="javascript:void(0)">Câu hỏi thường gặp khi mua linh kiện</a></li>
+                    </ul>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Modal đăng nhập & đăng ký -->
+    <div id="authModal" class="modal-overlay">
+        <div class="modal-card">
+            <button class="modal-close" onclick="dongHopThoaiTaiKhoan()">✕</button>
+            <div id="authModalContent"></div>
+        </div>
+    </div>
+
+    <!-- Modal chi tiết sản phẩm & đánh giá -->
+
+
+    <div id="reviewModal" class="modal-overlay">
+        <div class="modal-card modal-large">
+            <button class="modal-close" onclick="dongHopThoaiChiTiet()">✕</button>
+            <div id="reviewModalContent"></div>
+        </div>
+    </div>
+
+    <!-- Nạp các file script -->
+    <script src="./js/storage.js"></script>
+    <script src="./js/auth.js"></script>
+    <script src="./js/banner.js"></script>
+    <script src="./js/sanpham.js"></script>
+    <script src="./js/giohang.js"></script>
+</body>
+</html>
